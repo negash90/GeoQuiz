@@ -16,14 +16,18 @@ public class QuizActivity extends AppCompatActivity {
     private TextView mQuestionTextView;
     private static final String TAG = "QuizActivity";
     private static final String KEY_INDEX = "index";
+    private static final String ANSWER = "answer";
+    private  double correctAnsweres = 0.0;
+    private int score = 0;
+    private final double totalQuestions = 6.0;
 
     private Question[] mQuestionBank = new Question[]{
-            new Question(R.string.question_australia, true),
-            new Question(R.string.question_oceans, true),
-            new Question(R.string.question_mideast, false),
-            new Question(R.string.question_africa, false),
-            new Question(R.string.question_americas, true),
-            new Question(R.string.question_asia, true),
+            new Question(R.string.question_australia, true, false),
+            new Question(R.string.question_oceans, true, false),
+            new Question(R.string.question_mideast, false, false),
+            new Question(R.string.question_africa, false, false),
+            new Question(R.string.question_americas, true, false),
+            new Question(R.string.question_asia, true, false),
 
     };
     private int mCurrentIndex = 0;
@@ -35,19 +39,35 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+        int questionsAnswered = 0;
+        if (!mQuestionBank[mCurrentIndex].isAnswered()) {
 
-        int messageResId = 0;
+            int messageResId = 0;
+                if(score <= 6) {
+                    if (userPressedTrue == answerIsTrue) {
+                        messageResId = R.string.correct_toast;
+                        correctAnsweres++;
 
-        if (userPressedTrue == answerIsTrue) {
-            messageResId = R.string.correct_toast;
-        } else {
-            messageResId = R.string.incorrect_toast;
+                    } else {
+                        messageResId = R.string.incorrect_toast;
+                    }
+
+                    score++;
+                }
+
+
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
+                    .show();
+            mQuestionBank[mCurrentIndex].setAnswered(true);
+
+
         }
-
-        Toast.makeText(this, messageResId, Toast.LENGTH_SHORT)
-                .show();
+            if(score == 6) {
+                Toast.makeText(this, String.valueOf((correctAnsweres / totalQuestions) * 100.0) + "%", Toast.LENGTH_SHORT)
+                        .show();
+                score++;
+            }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
